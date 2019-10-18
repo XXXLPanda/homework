@@ -1,0 +1,56 @@
+---
+title: "GetStockData"
+author: "Xin Pan"
+date: "2019/10/19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import and library packages
+
+```{r}
+library(tseries)
+library(xts)
+library(BatchGetSymbols)
+```
+
+
+
+## Setting parameters
+```{r}
+first.date <- Sys.Date() - 365
+last.date <- Sys.Date()
+freq.data <- 'daily'
+tickers <- c('AAPL' )
+```
+
+##Get specific data to a value named sdata
+```{r}
+sdata = BatchGetSymbols(tickers = tickers, 
+                        first.date = first.date,
+                        last.date = last.date,
+                        freq.data = freq.data,
+                        cache.folder = file.path(tempdir(),
+                                                 'AAPL_cache'))
+head(sdata)
+```
+## Show the close price and volume
+ncol(sdata$df.tickers)
+```{r}
+plot(sdata$df.tickers$volume/1.e6,type='l',
+     ylab = 'volume (1000,000s)', xlab = 'day', main=tickers)
+grid()
+
+plot(sdata$df.tickers$price.close,
+     type='l', ylab = 'price $', xlab = 'day', main=tickers)
+grid()
+```
+
+## Just output it as a csv document
+```{r}
+write.csv(sdata$df.tickers,'AAPL.csv')
+```
+
